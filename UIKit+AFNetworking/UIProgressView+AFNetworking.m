@@ -94,13 +94,17 @@ static void * AFTaskCountOfBytesReceivedContext = &AFTaskCountOfBytesReceivedCon
 #endif
 
 #pragma mark -
-
+//上传进度
 - (void)setProgressWithUploadProgressOfOperation:(AFURLConnectionOperation *)operation
                                         animated:(BOOL)animated
 {
     __weak __typeof(self)weakSelf = self;
-    void (^original)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) = [operation.uploadProgress copy];
-    [operation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+    void (^original)(NSUInteger bytesWritten,
+                     long long totalBytesWritten,
+                     long long totalBytesExpectedToWrite) = [operation.uploadProgress copy];
+    [operation setUploadProgressBlock:^(NSUInteger bytesWritten,
+                                        long long totalBytesWritten,
+                                        long long totalBytesExpectedToWrite) {
         if (original) {
             original(bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
         }
@@ -113,7 +117,7 @@ static void * AFTaskCountOfBytesReceivedContext = &AFTaskCountOfBytesReceivedCon
         });
     }];
 }
-
+//下载进度
 - (void)setProgressWithDownloadProgressOfOperation:(AFURLConnectionOperation *)operation
                                           animated:(BOOL)animated
 {

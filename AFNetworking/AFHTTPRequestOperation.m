@@ -2,7 +2,7 @@
 
 #import "AFHTTPRequestOperation.h"
 
-static dispatch_queue_t http_request_operation_processing_queue() {
+static dispatch_queue_t http_request_operation_processing_queue() {//进度 调度队列
     static dispatch_queue_t af_http_request_operation_processing_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -12,7 +12,7 @@ static dispatch_queue_t http_request_operation_processing_queue() {
     return af_http_request_operation_processing_queue;
 }
 
-static dispatch_group_t http_request_operation_completion_group() {
+static dispatch_group_t http_request_operation_completion_group() {//完成 调度队列
     static dispatch_group_t af_http_request_operation_completion_group;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -22,14 +22,14 @@ static dispatch_group_t http_request_operation_completion_group() {
     return af_http_request_operation_completion_group;
 }
 
-#pragma mark -
+#pragma mark - 生成其他文件的保护对象
 
 @interface AFURLConnectionOperation ()
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
 @property (readwrite, nonatomic, strong) NSURLResponse *response;
 @end
 
-@interface AFHTTPRequestOperation ()
+@interface AFHTTPRequestOperation () //本身
 @property (readwrite, nonatomic, strong) NSHTTPURLResponse *response;
 @property (readwrite, nonatomic, strong) id responseObject;
 @property (readwrite, nonatomic, strong) NSError *responseSerializationError;
@@ -64,7 +64,9 @@ static dispatch_group_t http_request_operation_completion_group() {
     [self.lock lock];
     if (!_responseObject && [self isFinished] && !self.error) {
         NSError *error = nil;
-        self.responseObject = [self.responseSerializer responseObjectForResponse:self.response data:self.responseData error:&error];
+        self.responseObject = [self.responseSerializer responseObjectForResponse:self.response
+                                                                            data:self.responseData
+                                                                           error:&error];
         if (error) {
             self.responseSerializationError = error;
         }
@@ -93,7 +95,7 @@ static dispatch_group_t http_request_operation_completion_group() {
 #pragma clang diagnostic ignored "-Wgnu"
     self.completionBlock = ^{
         if (self.completionGroup) {
-            dispatch_group_enter(self.completionGroup);
+            dispatch_group_enter(self.completionGroup);//手动管理group关联的block的运行状态（或计数）
         }
 
         dispatch_async(http_request_operation_processing_queue(), ^{
@@ -127,6 +129,9 @@ static dispatch_group_t http_request_operation_completion_group() {
     };
 #pragma clang diagnostic pop
 }
+
+
+
 
 #pragma mark - AFURLRequestOperation
 

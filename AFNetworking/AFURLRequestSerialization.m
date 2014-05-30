@@ -1,24 +1,3 @@
-// AFSerialization.h
-//
-// Copyright (c) 2013-2014 AFNetworking (http://afnetworking.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 
 #import "AFURLRequestSerialization.h"
 
@@ -73,7 +52,10 @@ static NSString * AFPercentEscapedQueryStringValueFromStringWithEncoding(NSStrin
 	return (__bridge_transfer  NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (__bridge CFStringRef)string, NULL, (__bridge CFStringRef)kAFCharactersToBeEscapedInQueryString, CFStringConvertNSStringEncodingToEncoding(encoding));
 }
 
-#pragma mark -
+///---------------------------------------
+/// AFQueryStringPair
+///---------------------------------------
+
 
 @interface AFQueryStringPair : NSObject
 @property (readwrite, nonatomic, strong) id field;
@@ -108,7 +90,12 @@ static NSString * AFPercentEscapedQueryStringValueFromStringWithEncoding(NSStrin
 
 @end
 
-#pragma mark -
+
+
+///---------------------------------------
+///
+///---------------------------------------
+
 
 extern NSArray * AFQueryStringPairsFromDictionary(NSDictionary *dictionary);
 extern NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value);
@@ -166,7 +153,10 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
 - (NSMutableURLRequest *)requestByFinalizingMultipartFormData;
 @end
 
-#pragma mark -
+
+///---------------------------------------
+/// AFHTTPRequestSerializer
+///---------------------------------------
 
 @interface AFHTTPRequestSerializer ()
 @property (readwrite, nonatomic, strong) NSMutableDictionary *mutableHTTPRequestHeaders;
@@ -251,11 +241,11 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
 }
 
 - (void)clearAuthorizationHeader {
-	[self.mutableHTTPRequestHeaders removeObjectForKey:@"Authorization"];
+	[self.mutableHTTPRequestHeaders removeObjectForKey:@"Authorization"];//授权证书
 }
 
 #pragma mark -
-
+//查询
 - (void)setQueryStringSerializationWithStyle:(AFHTTPRequestQueryStringSerializationStyle)style {
     self.queryStringSerializationStyle = style;
     self.queryStringSerialization = nil;
@@ -295,7 +285,7 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
     mutableRequest.networkServiceType = self.networkServiceType;
     mutableRequest.timeoutInterval = self.timeoutInterval;
 
-    mutableRequest = [[self requestBySerializingRequest:mutableRequest withParameters:parameters error:error] mutableCopy];
+    mutableRequest = [[self requestBySerializingRequest:mutableRequest withParameters:parameters error:error] mutableCopy];//libo
 
 	return mutableRequest;
 }
@@ -411,7 +401,7 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
     NSParameterAssert(request);
 
     NSMutableURLRequest *mutableRequest = [request mutableCopy];
-
+    //将默认的 HTTPRequestHeaders 添加到 mutableRequest
     [self.HTTPRequestHeaders enumerateKeysAndObjectsUsingBlock:^(id field, id value, BOOL * __unused stop) {
         if (![request valueForHTTPHeaderField:field]) {
             [mutableRequest setValue:value forHTTPHeaderField:field];
@@ -476,6 +466,13 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
 
 @end
 
+
+
+///---------------------------------------
+/// AFHTTPBodyPart
+///---------------------------------------
+
+
 #pragma mark -
 
 static NSString * AFCreateMultipartFormBoundary() {
@@ -532,6 +529,13 @@ NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
         maxLength:(NSUInteger)length;
 @end
 
+
+///---------------------------------------
+/// AFMultipartBodyStream
+///---------------------------------------
+
+
+
 @interface AFMultipartBodyStream : NSInputStream <NSStreamDelegate>
 @property (nonatomic, assign) NSUInteger numberOfBytesInPacket;
 @property (nonatomic, assign) NSTimeInterval delay;
@@ -544,7 +548,11 @@ NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
 - (void)appendHTTPBodyPart:(AFHTTPBodyPart *)bodyPart;
 @end
 
-#pragma mark -
+
+///---------------------------------------
+/// AFStreamingMultipartFormData
+///---------------------------------------
+
 
 @interface AFStreamingMultipartFormData ()
 @property (readwrite, nonatomic, copy) NSMutableURLRequest *request;
@@ -723,7 +731,12 @@ NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
 
 @end
 
-#pragma mark -
+
+///---------------------------------------
+/// AFMultipartBodyStream
+///---------------------------------------
+
+
 
 @interface AFMultipartBodyStream () <NSCopying>
 @property (readwrite, nonatomic, assign) NSStreamStatus streamStatus;
@@ -895,7 +908,10 @@ NSTimeInterval const kAFUploadStream3GSuggestedDelay = 0.2;
 
 @end
 
-#pragma mark -
+///---------------------------------------
+/// AFHTTPBodyPart
+///---------------------------------------
+
 
 typedef enum {
     AFEncapsulationBoundaryPhase = 1,
@@ -1106,7 +1122,10 @@ typedef enum {
 
 @end
 
-#pragma mark -
+///---------------------------------------
+/// AFJSONRequestSerializer
+///---------------------------------------
+
 
 @implementation AFJSONRequestSerializer
 
@@ -1184,7 +1203,10 @@ typedef enum {
 
 @end
 
-#pragma mark -
+///---------------------------------------
+/// AFPropertyListRequestSerializer
+///---------------------------------------
+
 
 @implementation AFPropertyListRequestSerializer
 

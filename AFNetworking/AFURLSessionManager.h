@@ -1,24 +1,4 @@
-// AFURLSessionManager.h
-// 
-// Copyright (c) 2013-2014 AFNetworking (http://afnetworking.com)
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// 回话
 
 #import <Foundation/Foundation.h>
 
@@ -27,62 +7,16 @@
 #import "AFSecurityPolicy.h"
 #import "AFNetworkReachabilityManager.h"
 
-/**
- `AFURLSessionManager` creates and manages an `NSURLSession` object based on a specified `NSURLSessionConfiguration` object, which conforms to `<NSURLSessionTaskDelegate>`, `<NSURLSessionDataDelegate>`, `<NSURLSessionDownloadDelegate>`, and `<NSURLSessionDelegate>`.
- 
- ## Subclassing Notes
- 
- This is the base class for `AFHTTPSessionManager`, which adds functionality specific to making HTTP requests. If you are looking to extend `AFURLSessionManager` specifically for HTTP, consider subclassing `AFHTTPSessionManager` instead.
- 
- ## NSURLSession & NSURLSessionTask Delegate Methods
- 
- `AFURLSessionManager` implements the following delegate methods:
- 
- ### `NSURLSessionDelegate`
- 
- - `URLSession:didBecomeInvalidWithError:`
- - `URLSession:didReceiveChallenge:completionHandler:`
 
- ### `NSURLSessionTaskDelegate`
- 
- - `URLSession:willPerformHTTPRedirection:newRequest:completionHandler:`
- - `URLSession:task:didReceiveChallenge:completionHandler:`
- - `URLSession:task:didSendBodyData:totalBytesSent:totalBytesExpectedToSend:`
- - `URLSession:task:didCompleteWithError:`
-
- ### `NSURLSessionDataDelegate`
- 
- - `URLSession:dataTask:didReceiveResponse:completionHandler:`
- - `URLSession:dataTask:didBecomeDownloadTask:`
- - `URLSession:dataTask:didReceiveData:`
- - `URLSession:dataTask:willCacheResponse:completionHandler:`
- - `URLSessionDidFinishEventsForBackgroundURLSession:`
-
- ### `NSURLSessionDownloadDelegate`
-
- - `URLSession:downloadTask:didFinishDownloadingToURL:`
- - `URLSession:downloadTask:didWriteData:totalBytesWritten:totalBytesWritten:totalBytesExpectedToWrite:`
- - `URLSession:downloadTask:didResumeAtOffset:expectedTotalBytes:`
- 
- If any of these methods are overridden in a subclass, they _must_ call the `super` implementation first.
- 
- ## Network Reachability Monitoring
-
- Network reachability status and change monitoring is available through the `reachabilityManager` property. Applications may choose to monitor network reachability conditions in order to prevent or suspend any outbound requests. See `AFNetworkReachabilityManager` for more details.
- 
- ## NSCoding Caveats
- 
- - Encoded managers do not include any block properties. Be sure to set delegate callback blocks when using `-initWithCoder:` or `NSKeyedUnarchiver`.
-
- ## NSCopying Caveats
-
- - `-copy` and `-copyWithZone:` return a new manager with a new `NSURLSession` created from the configuration of the original.
- - Operation copies do not include any delegate callback blocks, as they often strongly captures a reference to `self`, which would otherwise have the unintuitive side-effect of pointing to the _original_ session manager when copied.
- */
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 
-@interface AFURLSessionManager : NSObject <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDataDelegate, NSURLSessionDownloadDelegate, NSCoding, NSCopying>
+@interface AFURLSessionManager : NSObject <NSURLSessionDelegate,
+                                           NSURLSessionTaskDelegate,
+                                           NSURLSessionDataDelegate,
+                                           NSURLSessionDownloadDelegate,
+                                           NSCoding,
+                                           NSCopying>
 
 /**
  The managed session.
@@ -101,13 +35,7 @@
  */
 @property (nonatomic, strong) id <AFURLResponseSerialization> responseSerializer;
 
-///-------------------------------
-/// @name Managing Security Policy
-///-------------------------------
 
-/**
- The security policy used by created request operations to evaluate server trust for secure connections. `AFURLSessionManager` uses the `defaultPolicy` unless otherwise specified.
- */
 @property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
 
 ///--------------------------------------

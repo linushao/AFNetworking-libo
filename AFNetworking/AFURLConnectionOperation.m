@@ -12,7 +12,7 @@
 #endif
 
 typedef NS_ENUM(NSInteger, AFOperationState) {
-    AFOperationPausedState      = -1,
+    AFOperationPausedState      = -1,//暂停
     AFOperationReadyState       = 1,
     AFOperationExecutingState   = 2,//执行
     AFOperationFinishedState    = 3,
@@ -53,12 +53,21 @@ NSString * const AFNetworkingOperationFailingURLResponseErrorKey = @"AFNetworkin
 NSString * const AFNetworkingOperationDidStartNotification = @"com.alamofire.networking.operation.start";
 NSString * const AFNetworkingOperationDidFinishNotification = @"com.alamofire.networking.operation.finish";
 
-typedef void (^AFURLConnectionOperationProgressBlock)(NSUInteger bytes, long long totalBytes, long long totalBytesExpected);
-typedef void (^AFURLConnectionOperationAuthenticationChallengeBlock)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge);
-typedef NSCachedURLResponse * (^AFURLConnectionOperationCacheResponseBlock)(NSURLConnection *connection, NSCachedURLResponse *cachedResponse);
-typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLConnection *connection, NSURLRequest *request, NSURLResponse *redirectResponse);
+typedef void (^AFURLConnectionOperationProgressBlock)(NSUInteger bytes,
+                                                      long long totalBytes,
+                                                      long long totalBytesExpected);
 
-static inline NSString * AFKeyPathFromOperationState(AFOperationState state) {
+typedef void (^AFURLConnectionOperationAuthenticationChallengeBlock)(NSURLConnection *connection,
+                                                                     NSURLAuthenticationChallenge *challenge);
+
+typedef NSCachedURLResponse * (^AFURLConnectionOperationCacheResponseBlock)(NSURLConnection *connection,
+                                                                            NSCachedURLResponse *cachedResponse);
+
+typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLConnection *connection,
+                                                                        NSURLRequest *request,
+                                                                        NSURLResponse *redirectResponse);
+
+static inline NSString * AFKeyPathFromOperationState(AFOperationState state) {//内联   inline只适合函数体内代码简单的函数使用，解决一些频繁调用的小函数大量消耗栈空间或者是叫栈内存的问题
     switch (state) {
         case AFOperationReadyState:
             return @"isReady";
@@ -118,7 +127,12 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     }
 }
 
+
+
+#pragma mark ------------------------------
+
 @interface AFURLConnectionOperation ()
+
 @property (readwrite, nonatomic, assign) AFOperationState state;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @property (readwrite, nonatomic, strong) NSURLConnection *connection;
@@ -140,6 +154,8 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 - (void)finish;
 - (void)cancelConnection;
 @end
+
+#pragma mark -------------------------------
 
 @implementation AFURLConnectionOperation
 @synthesize outputStream = _outputStream;
@@ -431,11 +447,21 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 - (void)start {
     [self.lock lock];
     if ([self isCancelled]) {
-        [self performSelector:@selector(cancelConnection) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
+        
+        [self performSelector:@selector(cancelConnection)
+                     onThread:[[self class] networkRequestThread]
+                   withObject:nil
+                waitUntilDone:NO
+                        modes:[self.runLoopModes allObjects]];
+        
     } else if ([self isReady]) {
         self.state = AFOperationExecutingState;
         
-        [self performSelector:@selector(operationDidStart) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
+        [self performSelector:@selector(operationDidStart)
+                     onThread:[[self class] networkRequestThread]
+                   withObject:nil
+                waitUntilDone:NO
+                        modes:[self.runLoopModes allObjects]];
     }
     [self.lock unlock];
 }
