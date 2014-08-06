@@ -34,7 +34,6 @@ typedef NS_ENUM(NSUInteger, AFHTTPRequestQueryStringSerializationStyle) {
 
 @property (nonatomic, assign) NSStringEncoding stringEncoding;
 
-@property (nonatomic, assign) BOOL allowsCellularAccess;//可以使用蜂窝无线电
 
 @property (nonatomic, assign) NSURLRequestCachePolicy cachePolicy;
 

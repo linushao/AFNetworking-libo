@@ -2,6 +2,11 @@
 
 #import "AFHTTPRequestOperation.h"
 
+/*
+ 方法名  
+ 返回单例队列
+ */
+
 static dispatch_queue_t http_request_operation_processing_queue() {//进度 调度队列
     static dispatch_queue_t af_http_request_operation_processing_queue;
     static dispatch_once_t onceToken;
@@ -153,24 +158,6 @@ static dispatch_group_t http_request_operation_completion_group() {//完成 调�
     [super pause];
 }
 
-#pragma mark - NSCoding
-
-- (id)initWithCoder:(NSCoder *)decoder {
-    self = [super initWithCoder:decoder];
-    if (!self) {
-        return nil;
-    }
-
-    self.responseSerializer = [decoder decodeObjectForKey:NSStringFromSelector(@selector(responseSerializer))];
-
-    return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder {
-    [super encodeWithCoder:coder];
-
-    [coder encodeObject:self.responseSerializer forKey:NSStringFromSelector(@selector(responseSerializer))];
-}
 
 #pragma mark - NSCopying
 

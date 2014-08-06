@@ -4,7 +4,6 @@
 
 #import "AFURLResponseSerialization.h"
 #import "AFURLRequestSerialization.h"
-#import "AFSecurityPolicy.h"
 #import "AFNetworkReachabilityManager.h"
 
 
@@ -36,7 +35,6 @@
 @property (nonatomic, strong) id <AFURLResponseSerialization> responseSerializer;
 
 
-@property (nonatomic, strong) AFSecurityPolicy *securityPolicy;
 
 ///--------------------------------------
 /// @name Monitoring Network Reachability

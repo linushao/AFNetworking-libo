@@ -3,7 +3,6 @@
 #import <Foundation/Foundation.h>
 
 #import <Availability.h>
-#import "AFSecurityPolicy.h"
 
 ///----------------
 /// @name Constants
@@ -41,11 +40,6 @@ extern NSString * const AFNetworkingOperationDidFinishNotification;
 @property (readonly, nonatomic, assign) NSStringEncoding responseStringEncoding;
 
 
-@property (nonatomic, assign) BOOL shouldUseCredentialStorage;//凭证
-@property (nonatomic, strong) NSURLCredential *credential;
-
-
-@property (nonatomic, strong) AFSecurityPolicy *securityPolicy;//安全、保证
 
 @property (nonatomic, strong) NSInputStream *inputStream;
 @property (nonatomic, strong) NSOutputStream *outputStream;

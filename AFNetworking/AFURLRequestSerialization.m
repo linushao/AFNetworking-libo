@@ -177,7 +177,6 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
     }
 
     self.stringEncoding = NSUTF8StringEncoding;
-    self.allowsCellularAccess = YES;
     self.cachePolicy = NSURLRequestUseProtocolCachePolicy;
     self.HTTPShouldHandleCookies = YES;
     self.HTTPShouldUsePipelining = NO;
@@ -278,14 +277,13 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
 
     NSMutableURLRequest *mutableRequest = [[NSMutableURLRequest alloc] initWithURL:url];
     mutableRequest.HTTPMethod = method;
-    mutableRequest.allowsCellularAccess = self.allowsCellularAccess;
     mutableRequest.cachePolicy = self.cachePolicy;
     mutableRequest.HTTPShouldHandleCookies = self.HTTPShouldHandleCookies;
     mutableRequest.HTTPShouldUsePipelining = self.HTTPShouldUsePipelining;
     mutableRequest.networkServiceType = self.networkServiceType;
     mutableRequest.timeoutInterval = self.timeoutInterval;
 
-    mutableRequest = [[self requestBySerializingRequest:mutableRequest withParameters:parameters error:error] mutableCopy];//libo
+    mutableRequest = [[self requestBySerializingRequest:mutableRequest withParameters:parameters error:error] mutableCopy];
 
 	return mutableRequest;
 }
