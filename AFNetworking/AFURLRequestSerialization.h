@@ -33,16 +33,10 @@ typedef NS_ENUM(NSUInteger, AFHTTPRequestQueryStringSerializationStyle) {
 @interface AFHTTPRequestSerializer : NSObject <AFURLRequestSerialization>
 
 @property (nonatomic, assign) NSStringEncoding stringEncoding;
-
-
 @property (nonatomic, assign) NSURLRequestCachePolicy cachePolicy;
-
 @property (nonatomic, assign) BOOL HTTPShouldHandleCookies;
-
 @property (nonatomic, assign) BOOL HTTPShouldUsePipelining;//接受先前数据
-
 @property (nonatomic, assign) NSURLRequestNetworkServiceType networkServiceType;//libo
-
 @property (nonatomic, assign) NSTimeInterval timeoutInterval;
 
 
@@ -50,13 +44,9 @@ typedef NS_ENUM(NSUInteger, AFHTTPRequestQueryStringSerializationStyle) {
 ///---------------------------------------
 /// @name Configuring HTTP Request Headers
 ///---------------------------------------
-
 @property (readonly, nonatomic, strong) NSDictionary *HTTPRequestHeaders;
-
 + (instancetype)serializer;
-
 - (void)setValue:(NSString *)value forHTTPHeaderField:(NSString *)field;
-
 - (void)setAuthorizationHeaderFieldWithUsername:(NSString *)username
                                        password:(NSString *)password;
 
@@ -64,7 +54,6 @@ typedef NS_ENUM(NSUInteger, AFHTTPRequestQueryStringSerializationStyle) {
  @deprecated This method has been deprecated. Use -setValue:forHTTPHeaderField: instead.
  */
 - (void)setAuthorizationHeaderFieldWithToken:(NSString *)token DEPRECATED_ATTRIBUTE;
-
 - (void)clearAuthorizationHeader;
 
 

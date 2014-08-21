@@ -315,7 +315,6 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 
 #pragma mark -
 
-
 - (void)pause {
     if ([self isPaused] || [self isFinished] || [self isCancelled]) {
         return;
@@ -431,7 +430,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     if ([self isCancelled]) {
         
         [self performSelector:@selector(cancelConnection)
-                     onThread:[[self class] networkRequestThread]
+                     onThread:[[self class] networkRequestThread]//libo 自己调用实例方法
                    withObject:nil
                 waitUntilDone:NO
                         modes:[self.runLoopModes allObjects]];
@@ -463,7 +462,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     }
     [self.lock unlock];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{//libo 在主线程中发消息
         [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidStartNotification object:self];
     });
 }

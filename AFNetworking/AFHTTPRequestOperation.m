@@ -102,7 +102,7 @@ static dispatch_group_t http_request_operation_completion_group() {//完成 调�
         if (self.completionGroup) {
             dispatch_group_enter(self.completionGroup);//手动管理group关联的block的运行状态（或计数）
         }
-
+        //向一个队列提交Job很简单：调用dispatch_async函数，传入一个队列和一个block。队列会在轮到这个block执行时执行这个block的代码
         dispatch_async(http_request_operation_processing_queue(), ^{
             if (self.error) {
                 if (failure) {

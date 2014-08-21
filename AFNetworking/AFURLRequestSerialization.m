@@ -145,6 +145,9 @@ NSArray * AFQueryStringPairsFromKeyAndValue(NSString *key, id value) {
 }
 
 #pragma mark -
+///---------------------------------------
+/// AFStreamingMultipartFormData
+///---------------------------------------
 
 @interface AFStreamingMultipartFormData : NSObject <AFMultipartFormData>
 - (instancetype)initWithURLRequest:(NSMutableURLRequest *)urlRequest
