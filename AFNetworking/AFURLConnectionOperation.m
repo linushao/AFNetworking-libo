@@ -24,6 +24,7 @@ typedef UIBackgroundTaskIdentifier AFBackgroundTaskIdentifier;
 typedef id AFBackgroundTaskIdentifier;
 #endif
 
+
 static dispatch_group_t url_request_operation_completion_group() {
     static dispatch_group_t af_url_request_operation_completion_group;
     static dispatch_once_t onceToken;
@@ -44,6 +45,7 @@ static dispatch_queue_t url_request_operation_completion_queue() {
     return af_url_request_operation_completion_queue;
 }
 
+
 static NSString * const kAFNetworkingLockName = @"com.alamofire.networking.operation.lock";
 
 NSString * const AFNetworkingErrorDomain = @"AFNetworkingErrorDomain";
@@ -52,6 +54,7 @@ NSString * const AFNetworkingOperationFailingURLResponseErrorKey = @"AFNetworkin
 
 NSString * const AFNetworkingOperationDidStartNotification = @"com.alamofire.networking.operation.start";
 NSString * const AFNetworkingOperationDidFinishNotification = @"com.alamofire.networking.operation.finish";
+
 
 typedef void (^AFURLConnectionOperationProgressBlock)(NSUInteger bytes,
                                                       long long totalBytes,
@@ -66,67 +69,6 @@ typedef NSCachedURLResponse * (^AFURLConnectionOperationCacheResponseBlock)(NSUR
 typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLConnection *connection,
                                                                         NSURLRequest *request,
                                                                         NSURLResponse *redirectResponse);
-
-static inline NSString * AFKeyPathFromOperationState(AFOperationState state) {//内联   inline只适合函数体内代码简单的函数使用，解决一些频繁调用的小函数大量消耗栈空间或者是叫栈内存的问题
-    switch (state) {
-        case AFOperationReadyState:
-            return @"isReady";
-        case AFOperationExecutingState:
-            return @"isExecuting";
-        case AFOperationFinishedState:
-            return @"isFinished";
-        case AFOperationPausedState:
-            return @"isPaused";
-        default: {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunreachable-code"
-            return @"state";
-#pragma clang diagnostic pop
-        }
-    }
-}
-
-static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperationState toState, BOOL isCancelled) {
-    switch (fromState) {
-        case AFOperationReadyState:
-            switch (toState) {
-                case AFOperationPausedState:
-                case AFOperationExecutingState:
-                    return YES;
-                case AFOperationFinishedState:
-                    return isCancelled;
-                default:
-                    return NO;
-            }
-        case AFOperationExecutingState:
-            switch (toState) {
-                case AFOperationPausedState:
-                case AFOperationFinishedState:
-                    return YES;
-                default:
-                    return NO;
-            }
-        case AFOperationFinishedState:
-            return NO;
-        case AFOperationPausedState:
-            return toState == AFOperationReadyState;
-        default: {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunreachable-code"
-            switch (toState) {
-                case AFOperationPausedState:
-                case AFOperationReadyState:
-                case AFOperationExecutingState:
-                case AFOperationFinishedState:
-                    return YES;
-                default:
-                    return NO;
-            }
-        }
-#pragma clang diagnostic pop
-    }
-}
-
 
 
 #pragma mark ------------------------------
@@ -184,23 +126,16 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 
 - (instancetype)initWithRequest:(NSURLRequest *)urlRequest {
     NSParameterAssert(urlRequest);//有的方法的条件可以满足可以不满足，都不影响执行。但如果你希望程序在某些条件不满足的时候产生错误告诉你，就用nsparameterassert让程序崩溃。
-
     self = [super init];
     if (!self) {
 		return nil;
     }
-
     _state = AFOperationReadyState;
-
     self.lock = [[NSRecursiveLock alloc] init];
     self.lock.name = kAFNetworkingLockName;
-    
     self.runLoopModes = [NSSet setWithObject:NSRunLoopCommonModes];
-    
     self.request = urlRequest;
     
-
-
     return self;
 }
 
@@ -296,14 +231,11 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
         __weak __typeof(self)weakSelf = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
             __strong __typeof(weakSelf)strongSelf = weakSelf;
-            
             if (handler) {
                 handler();
             }
-            
             if (strongSelf) {
                 [strongSelf cancel];
-                
                 [application endBackgroundTask:strongSelf.backgroundTaskIdentifier];
                 strongSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
             }
@@ -314,14 +246,11 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 #endif
 
 #pragma mark -
-
 - (void)pause {
     if ([self isPaused] || [self isFinished] || [self isCancelled]) {
         return;
     }
-    
     [self.lock lock];
-    
     if ([self isExecuting]) {
         [self performSelector:@selector(operationDidPause) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
         
@@ -330,9 +259,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
             [notificationCenter postNotificationName:AFNetworkingOperationDidFinishNotification object:self];
         });
     }
-    
     self.state = AFOperationPausedState;
-    
     [self.lock unlock];
 }
 
@@ -467,7 +394,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     });
 }
 
-- (void)finish {
+- (void)finish{
     [self.lock lock];
     self.state = AFOperationFinishedState;
     [self.lock unlock];
@@ -509,19 +436,18 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 }
 
 #pragma mark -
-
 + (NSArray *)batchOfRequestOperations:(NSArray *)operations
                         progressBlock:(void (^)(NSUInteger numberOfFinishedOperations, NSUInteger totalNumberOfOperations))progressBlock
-                      completionBlock:(void (^)(NSArray *operations))completionBlock
-{
+                      completionBlock:(void (^)(NSArray *operations))completionBlock{
+    
     if (!operations || [operations count] == 0) {
         return @[[NSBlockOperation blockOperationWithBlock:^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (completionBlock) {
-                    completionBlock(@[]);
-                }
-            });
-        }]];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (completionBlock) {
+                            completionBlock(@[]);
+                        }
+                    });
+                }]];
     }
 
     __block dispatch_group_t group = dispatch_group_create();
@@ -682,8 +608,8 @@ didReceiveResponse:(NSURLResponse *)response
 }
 
 - (void)connection:(NSURLConnection __unused *)connection
-  didFailWithError:(NSError *)error
-{
+  didFailWithError:(NSError *)error{
+    
     self.error = error;
 
     [self.outputStream close];
@@ -692,7 +618,6 @@ didReceiveResponse:(NSURLResponse *)response
     }
 
     self.connection = nil;
-
     [self finish];
 }
 
