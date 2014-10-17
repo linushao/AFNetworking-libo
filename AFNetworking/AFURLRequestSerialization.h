@@ -7,6 +7,9 @@
 
 #pragma mark -------------- AFURLRequestSerialization ---------------
 //设置相应的 HTTP 格式
+///---------------------------------------
+/// AFURLRequestSerialization
+///---------------------------------------
 @protocol AFURLRequestSerialization <NSObject, NSCoding, NSCopying>
 
 - (NSURLRequest *)requestBySerializingRequest:(NSURLRequest *)request

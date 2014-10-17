@@ -20,6 +20,10 @@ extern NSString * const AFNetworkingOperationDidStartNotification;
 extern NSString * const AFNetworkingOperationDidFinishNotification;
 
 
+
+
+#pragma mark ------
+
 @interface AFURLConnectionOperation : NSOperation <NSURLConnectionDelegate,
                                                    NSURLConnectionDataDelegate,
                                                    NSCoding,
@@ -69,6 +73,7 @@ extern NSString * const AFNetworkingOperationDidFinishNotification;
 ///---------------------------------
 
 
+/* 定义好typedefy BLOCK ；此处显示BLOCK的元素，可在调用时显示元素 */
 - (void)setUploadProgressBlock:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))block;
 
 - (void)setDownloadProgressBlock:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))block;

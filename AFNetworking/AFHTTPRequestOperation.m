@@ -5,7 +5,15 @@
 /*
  方法名  
  返回单例队列
- */
+*/
+
+/* 
+ static作用：
+ 1限制范围(函数,变量只能在本文件中使用)
+ 2设定变量存储区域(静态存储区域)
+ const作用：
+ 声明常量，它不能被修改，它存放在常量区
+*/
 
 static dispatch_queue_t http_request_operation_processing_queue() {//进度 调度队列
     static dispatch_queue_t af_http_request_operation_processing_queue;
@@ -112,18 +120,10 @@ static dispatch_group_t http_request_operation_completion_group() {//完成 调�
                 }
             } else {
                 id responseObject = self.responseObject;
-                if (self.error) {
-                    if (failure) {
-                        dispatch_group_async(self.completionGroup ?: http_request_operation_completion_group(), self.completionQueue ?: dispatch_get_main_queue(), ^{
-                            failure(self, self.error);
-                        });
-                    }
-                } else {
-                    if (success) {
-                        dispatch_group_async(self.completionGroup ?: http_request_operation_completion_group(), self.completionQueue ?: dispatch_get_main_queue(), ^{
-                            success(self, responseObject);
-                        });
-                    }
+                if (success) {
+                    dispatch_group_async(self.completionGroup ?: http_request_operation_completion_group(), self.completionQueue ?: dispatch_get_main_queue(), ^{
+                        success(self, responseObject);
+                    });
                 }
             }
 

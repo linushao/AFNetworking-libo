@@ -102,6 +102,7 @@ typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLCon
 @implementation AFURLConnectionOperation
 @synthesize outputStream = _outputStream;
 
+/* + 调用 [[self class] networkRequestThread] */
 + (NSThread *)networkRequestThread {
     static NSThread *_networkRequestThread = nil;
     static dispatch_once_t oncePredicate;
@@ -252,11 +253,16 @@ typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLCon
     }
     [self.lock lock];
     if ([self isExecuting]) {
-        [self performSelector:@selector(operationDidPause) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
-        
+        [self performSelector:@selector(operationDidPause)
+                     onThread:[[self class] networkRequestThread]
+                   withObject:nil
+                waitUntilDone:NO
+                        modes:[self.runLoopModes allObjects]];
+
         dispatch_async(dispatch_get_main_queue(), ^{
             NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-            [notificationCenter postNotificationName:AFNetworkingOperationDidFinishNotification object:self];
+            [notificationCenter postNotificationName:AFNetworkingOperationDidFinishNotification
+                                              object:self];
         });
     }
     self.state = AFOperationPausedState;
@@ -274,6 +280,7 @@ typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLCon
 }
 
 - (void)resume {
+    /* 不是暂停状态则取消 */
     if (![self isPaused]) {
         return;
     }
@@ -377,7 +384,9 @@ typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLCon
 - (void)operationDidStart {
     [self.lock lock];
     if (![self isCancelled]) {
-        self.connection = [[NSURLConnection alloc] initWithRequest:self.request delegate:self startImmediately:NO];
+        self.connection = [[NSURLConnection alloc] initWithRequest:self.request
+                                                          delegate:self
+                                                  startImmediately:NO];
         
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         for (NSString *runLoopMode in self.runLoopModes) {
@@ -390,7 +399,8 @@ typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLCon
     [self.lock unlock];
     
     dispatch_async(dispatch_get_main_queue(), ^{//libo 在主线程中发消息
-        [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidStartNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidStartNotification
+                                                            object:self];
     });
 }
 
@@ -400,7 +410,8 @@ typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLCon
     [self.lock unlock];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidFinishNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidFinishNotification
+                                                            object:self];
     });
 }
 
@@ -419,9 +430,12 @@ typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLCon
 - (void)cancelConnection {
     NSDictionary *userInfo = nil;
     if ([self.request URL]) {
-        userInfo = [NSDictionary dictionaryWithObject:[self.request URL] forKey:NSURLErrorFailingURLErrorKey];
+        userInfo = [NSDictionary dictionaryWithObject:[self.request URL]
+                                               forKey:NSURLErrorFailingURLErrorKey];
     }
-    NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:userInfo];
+    NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                         code:NSURLErrorCancelled
+                                     userInfo:userInfo];
 
     if (![self isFinished]) {
         if (self.connection) {
@@ -545,7 +559,9 @@ totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
 {
     if (self.uploadProgress) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.uploadProgress((NSUInteger)bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
+            self.uploadProgress((NSUInteger)bytesWritten,
+                                totalBytesWritten,
+                                totalBytesExpectedToWrite);
         });
     }
 }
